@@ -5,12 +5,12 @@
 > VietMoney OpenAPI 1.0
 
 ```
-__     ___      _   __  __                        
- \ \   / (_) ___| |_|  \/  | ___  _ __   ___ _   _ 
+__     ___      _   __  __
+ \ \   / (_) ___| |_|  \/  | ___  _ __   ___ _   _
   \ \ / /| |/ _ \ __| |\/| |/ _ \| '_ \ / _ \ | | |
    \ V / | |  __/ |_| |  | | (_) | | | |  __/ |_| |
     \_/  |_|\___|\__|_|  |_|\___/|_| |_|\___|\__, |
-                                             |___/ 
+                                             |___/
 ```
 
 **VietMoney OpenAPI (1.0)** là cổng mở cho các đơn vị ví điện tử, ngân hàng, thu hộ cho phép đối tác sử dụng API để giúp khách hàng tra cứu/ thanh toán/ gia hạn khoản vay của VietMoney tại ứng dụng của đối tác.
@@ -20,7 +20,7 @@ Ngoài ra VMOA cũng phù hợp cho các đơn vị bên thứ 3 tiếp thị li
 
 ### Tên sản phẩm
 
-VietMoney OpenAPI 1.0 =  VMOA
+VietMoney OpenAPI 1.0 = VMOA
 
 ### Tài khoản doanh nghiệp
 
@@ -45,7 +45,7 @@ Các bước cơ bản để tích hợp với VietMoney:
 
 - Liên hệ và Đăng ký [tài khoản doanh nghiệp](emailto:dathq@vietmoney.vn).
 
-> Bạn cần hoàn thành quá trình đăng ký với đầy đủ thông tin, trạng thái mặc định của doanh nghiệp sẽ là `chưa xác thực`. 
+> Bạn cần hoàn thành quá trình đăng ký với đầy đủ thông tin, trạng thái mặc định của doanh nghiệp sẽ là `chưa xác thực`.
 > [Thông tin tích hợp](home?id=th%c3%b4ng-tin-t%c3%adch-h%e1%bb%a3p) mặc định sẽ môi trường `Sandbox`
 
 - Đơn vị tiến hành kiểm thử phần mềm, tham khảo các **testcase** của VietMoney cung cấp để kiểm tra các lỗi phổ biến trong quá trình thanh toán.
@@ -67,9 +67,9 @@ VietMoney cung cấp cho đơn vị kinh doanh hai môi trường để tích h�
 
 Thông tin cấu hình để kết nối với **VietMoney API**.
 
-- **Partner Code**: Thông tin để định danh tài khoản doanh nghiệp.
-- **API Key**: Cấp quyền truy cập vào hệ thống VietMoney.
-- **Secret Key**: Dùng để tạo chữ ký điện tử `signature`.
+- **Client ID**: Thông tin để định danh tài khoản doanh nghiệp.
+- **Client Secret**: Cấp quyền truy cập vào hệ thống VietMoney.
+- **Secret Key**: Dùng để tạo chữ ký điện tử `signature` bằng thuật toán HMAC.
 - **Public Key**: Sử dụng để tạo mã hoá dữ liệu bằng thuật toán RSA.
 
 > Vì đây là thông tin sẽ thay đổi theo từng môi trường. Bạn nên để chúng trong cấu hình môi trường của ứng dụng. [Chi tiết](https://12factor.net/config)
@@ -78,12 +78,11 @@ Thông tin cấu hình để kết nối với **VietMoney API**.
 
 ### Cấu hình HTTP Request
 
-| Key | Value |
-| --- | ----- |
-|Content-Type|`application/json; charset=UTF-8`|
-|Method		 |`POST`|
-|Domain		 | Production: [https://partner.vietmoney.vn](https://partner.vietmoney.vn)</br>Sandbox: [https://sandbox-partner.vietmoney.vn](https://sandbox-partner.vietmoney.vn)|
-
+| Key          | Value                                                                                                                                                                      |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Content-Type | `application/json; charset=UTF-8`                                                                                                                                          |
+| Method       | `POST`                                                                                                                                                                     |
+| Domain       | Production: [https://partner.vietmoney.vn](https://partner.vietmoney.vn/api)</br>Sandbox: [https://sandbox-partner.vietmoney.vn](https://sandbox-partner.vietmoney.vn/api) |
 
 ## Security
 
@@ -106,18 +105,17 @@ Thông tin về các cặp `key=value` xem chi tiết hơn trong từng bảng m
 
 #### Ví dụ
 
-
 Request mẫu
 
 ```json
 {
-  "apiKey": "2rFzwj5Xdsg4KncGbfcOfmjCMTRkrrP0",
-  "partnerCode": "ViettelPay",
+  "clientSecret": "2rFzwj5Xdsg4KncGbfcOfmjCMTRkrrP0",
+  "clientId": "ViettelPay",
   "orderId": "MM1540456472575",
   "query": "CKH382671222",
   "orderInfo": "TRA CUU KHOAN VAY TAI KHOAN",
   "metadata": {
-    "paidPhoneNo": "09333937372",
+    "paidPhoneNo": "09333937372"
   },
   "signature": "996ed81d68a1b05c99516835e404b2d0146d9b12fbcecbf80c7e51df51cac85e"
 }
@@ -126,7 +124,7 @@ Request mẫu
 Cách tạo chữ ký điện tử:
 
 ```http query
-partnerCode=$partnerCode&apiKey=$apiKey&query=$query&orderInfo=$orderInfo&extraData=JSON.stringify($extraData)
+partnerCode=$partnerCode&apiKey=$apiKey&query=$query&orderInfo=$orderInfo&extraData=JSON.stringify($extraData)&clientId=$clientSecret&clientId=$clientId
 ```
 
 ==> Dữ liệu được tạo ra:
@@ -135,27 +133,29 @@ partnerCode=$partnerCode&apiKey=$apiKey&query=$query&orderInfo=$orderInfo&extraD
 partnerCode=ViettelPay&apiKey=2rFzwj5Xdsg4KncGbfcOfmjCMTRkrrP0&query=CKH382671222&orderInfo=$orderInfo&extraData=JSON.stringify($extraData)
 ```
 
-
 => Chữ ký được tạo ra:
 
 Secret Key: `K951B6PE1waDMi640xX08PD3vg6EkVlz`
 
-```javascript 
+```javascript
 var signature = HmacSHA256(data, secretkey);
 console.log(signature);
 
 996ed81d68a1b05c99516835e404b2d0146d9b12fbcecbf80c7e51df51cac85e
 ```
+
 !> **Lưu ý**: Đây chỉ là ví dụ mẫu cho cách tạo chữ ký, bạn phải thay thế dữ liệu của chính bạn để tạo chữ ký chính xác.
 
 <a href="/tryitnow/#integrate_key" class="try-your__self"> Try it now</a>
 
 ### Mã hóa RSA
-[Mã hóa RSA](https://vi.wikipedia.org/wiki/RSA_(m%C3%A3_h%C3%B3a)) là một thuật toán **mã hóa khóa công khai** để **bảo vệ thông tin** trên đường truyền. Sử dụng một cặp key (`public key` và `private key`) để mã hóa và giải mã dữ liệu. Đối tác dùng [public key](home?id=key-credential) do VietMoney cung cấp để mã hóa data theo định dạng của VietMoney, VietMoney sẽ giải mã bằng **private key**.
+
+[Mã hóa RSA](<https://vi.wikipedia.org/wiki/RSA_(m%C3%A3_h%C3%B3a)>) là một thuật toán **mã hóa khóa công khai** để **bảo vệ thông tin** trên đường truyền. Sử dụng một cặp key (`public key` và `private key`) để mã hóa và giải mã dữ liệu. Đối tác dùng [public key](home?id=key-credential) do VietMoney cung cấp để mã hóa data theo định dạng của VietMoney, VietMoney sẽ giải mã bằng **private key**.
 
 Thuật toán RSA được VietMoney sử dụng theo chuẩn: [PKCS #8](https://en.wikipedia.org/wiki/PKCS_8)
 
 #### Ví dụ
+
 > Dữ liệu trước khi RSA
 
 ```json
@@ -175,3 +175,102 @@ A7WFmmnpn6TRX42Akh/iC5DdU5hhBT9LR5QSG6rJAl70hfEkkGUx2pTCai8s+M9KMVUcJ7m52iv74yhm
 ```
 
 <a href="/tryitnow/#integrate_key" class="try-your__self"> Try it now</a>
+
+# Đơn hàng
+
+## Tạo đơn hàng
+
+Đối tác có thể tạo đơn hàng yêu cầu cầm cố hoặc khoản vay.
+
+### HTTP Request
+
+> POST /api/sales/v1/orders
+
+| Tên field   | Kiểu          | Bắt buộc | Mô tả                                                                                         | Giá trị mặc định |
+| ----------- | ------------- | -------- | --------------------------------------------------------------------------------------------- | ---------------- |
+| fullName    | String        | √        | Họ và tên khách hàng                                                                          |                  |
+| phoneNumber | String        | √        | Số điện thoại khách hàng                                                                      |                  |
+| demandLoan  | String        | √        | Số tiền khách hàng cần vay. Đối tác nên gửi chuỗi số                                          |                  |
+| description | String        | √        | Mô tả tình trạng, loại tài sản cầm cố                                                         |                  |
+| images      | Array[String] | √        | Danh sách đường link hình ảnh, kiểu dữ liệu là mảng của chuỗi link                            |                  |
+| metadata      | Object[Metadata] |         | Thông tin metadata của đơn hàng                           |                  | NULL
+| txnId       | String        | √        | Transaction ID của đối tác sinh ra. Mã này bắt buộc phải là duy nhất tại hệ thống của đối tác |                  |
+
+Metadata Object
+
+| Tên field   | Kiểu          | Bắt buộc | Mô tả                                                                                         | Giá trị mặc định |
+| ----------- | ------------- | -------- | --------------------------------------------------------------------------------------------- | ---------------- |
+| location    | String        |         | Thông số geolocation của người dùng, Theo định dạng `longtitude,latitude`                                                                         |                  |
+| userAgent | String        | √       | Thông số user agent của người dùng                                                                      |                  |
+| ip  | String        |         | Địa chỉ IP của khách hàng                                          |                  |
+
+#### Sample Request
+
+```json
+curl --location --request POST 'https://sandbox-partner.vietmoney.vn/api/sales/v1/orders' \
+--header 'Content-Type: application/json' \
+--header 'apiKey: XXXXXX' \
+--data-raw '{
+    "fullName": "Nguyễn Xuân Đạt",
+    "phoneNumber": "0472692671",
+    "demandLoan": "30000000",
+    "description": "Xe Honda Airblade 2019 BSTP, mới 99%",
+    "images": [
+        "https://danhgiaxe.net/wp-content/uploads/2018/08/Honda-Airblade-2019-3.jpg"
+    ],
+    "metadata": {
+        "location": "10.7653943,106.659986",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36",
+        "ip": "100.02.0.20"
+    },
+    "txnId": "693b604e-e58e-421e-8e13-99cdad19807a"
+}'
+```
+
+### HTTP Response
+
+| Tên field   | Kiểu          | Bắt buộc | Mô tả                                                                                         | Giá trị mặc định |
+| ----------- | ------------- | -------- | --------------------------------------------------------------------------------------------- | ---------------- |
+| id    | String        | √        | Mã đơn hàng được sinh ra từ VietMoney                                                                          |                  |
+| fullName    | String        | √        | Họ và tên khách hàng                                                                          |                  |
+| phoneNumber | String        | √        | Số điện thoại khách hàng                                                                      |                  |
+| demandLoan  | String        | √        | Số tiền khách hàng cần vay. Đối tác nên gửi chuỗi số                                          |                  |
+| description | String        | √        | Mô tả tình trạng, loại tài sản cầm cố                                                         |                  |
+| images      | Array[String] | √        | Danh sách đường link hình ảnh, kiểu dữ liệu là mảng của chuỗi link                            |                  |
+| metadata      | Object[Metadata] |         | Thông tin metadata của đơn hàng                           |                  | NULL
+| txnId       | String        | √        | Transaction ID của đối tác sinh ra. Mã này bắt buộc phải là duy nhất tại hệ thống của đối tác |                  |
+| sourceId       | String        | √        | Mã này được VietMoney định danh đối tác (ESA) |                  |
+| hash       | String        | √        | Mã này được VietMoney sinh ra để tránh việc có nhiều đơn hàng vào cùng 1 thời điểm bị trùng nhau |                  |
+
+Metadata Object
+
+| Tên field   | Kiểu          | Bắt buộc | Mô tả                                                                                         | Giá trị mặc định |
+| ----------- | ------------- | -------- | --------------------------------------------------------------------------------------------- | ---------------- |
+| location    | String        |         | Thông số geolocation của người dùng, Theo định dạng `longtitude,latitude`                                                                         |                  |
+| userAgent | String        | √       | Thông số user agent của người dùng                                                                      |                  |
+| ip  | String        |         | Địa chỉ IP của khách hàng                                          |                  |
+
+
+#### Sample response
+
+```json
+{
+    "id": "5e5a4c123083133d5f6a46bc",
+    "fullName": "Nguyễn Xuân Đạt",
+    "phoneNumber": "0472692671",
+    "demandLoan": "30000000",
+    "description": "Xe Honda Airblade 2019 BSTP, mới 99%",
+    "images": [
+        "https://danhgiaxe.net/wp-content/uploads/2018/08/Honda-Airblade-2019-3.jpg"
+    ],
+    "metadata": {
+        "location": "10.7653943,106.659986",
+        "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36",
+        "ip": "100.02.0.20"
+    },
+    "sourceId": "YOUR_IDENTITY_SOURCE",
+    "createdAt": "2020-02-29T11:33:38.212Z",
+    "updatedAt": "2020-02-29T11:33:38.212Z",
+    "hash": "69b1d1dd80310cfd54e297f8162f472e"
+}
+```
